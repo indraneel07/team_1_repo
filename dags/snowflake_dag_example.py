@@ -6,7 +6,7 @@ _SNOWFLAKE_CONN_ID = "snowflake_conn"
 
 
 @dag(
-    dag_display_name="Snowflake Tutorial DAG TEAM-2",
+    dag_display_name="Snowflake Tutorial DAG TEAM-2 ❄️",
     start_date=datetime(2024, 9, 1),
     schedule=None,
     catchup=False,
