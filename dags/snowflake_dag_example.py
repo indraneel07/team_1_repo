@@ -21,7 +21,7 @@ def my_snowflake_dag():
         task_id="run_query",
         conn_id=_SNOWFLAKE_CONN_ID,
         database="HQ",
-        sql="select * from HQ.model_astro.alerts limit 10;"
+        sql="SELECT COUNT(*) FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF10.LINEITEM;"
     )
 
     run_query
