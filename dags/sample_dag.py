@@ -1,0 +1,24 @@
+from airflow.sdk import dag, task
+from datetime import datetime
+
+@dag(
+    schedule='@daily',
+    start_date=datetime(2026, 1, 1),
+    tags=["my_first_dag"],
+    catchup=False
+)
+def my_first_dag_with_taskflow_api():
+    @task
+    def hello_world():
+        print("Hello, world!")
+
+    @task
+    def goodbye_world():
+        print("Goodbye, world!")
+
+    hello = hello_world()
+    goodbye = goodbye_world()
+
+    hello >> goodbye
+
+my_first_dag_with_taskflow_api()
