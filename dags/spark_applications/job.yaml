@@ -7,7 +7,7 @@ spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v3"
+  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v5"
   imagePullPolicy: Always
   sparkVersion: "3.5.3"
   restartPolicy:
@@ -26,6 +26,8 @@ spec:
   arguments:
     - "--job-module"
     - "zfi_lfc302.main"
+    - "--job-zip"
+    - "s3a://indraneel-re-aws/udecf/v1/wrangler_demo.zip"
     - "--input"
     - "s3a://indraneel-re-aws/raw/person_identity/ZFI_LFC302/2026/05/07"
     - "--output"
