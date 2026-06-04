@@ -1,0 +1,68 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: spark-job
+  namespace: spark-loads
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v1"
+  imagePullPolicy: Always
+  sparkVersion: "3.5.3"
+  restartPolicy:
+    type: Never
+
+  # entrypoint pulled from S3 by the driver pod
+  mainApplicationFile: "s3a://indraneel-re-aws/udecf/v1/main.py"
+
+  # the --py-files equivalent: dependency package distributed to driver+executors
+  deps:
+    pyFiles:
+      - "s3a://indraneel-re-aws/udecf/v1/wrangler_demo.zip"
+
+  # arguments passed to main.py (mirrors the EMR "Script arguments")
+  arguments:
+    - "--input"
+    - "s3a://indraneel-re-aws/raw/person_identity/ZFI_LFC302/2026/05/07"
+    - "--output"
+    - "s3a://indraneel-re-aws/curated/DU_WORKSPACE/ZFI_LFC302"
+    - "--dataset"
+    - "ZFI_LFC302"
+
+  sparkConf:
+    # --- S3A + IRSA credentials (no static keys) ---
+    "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+    "spark.hadoop.fs.s3a.aws.credentials.provider": "com.amazonaws.auth.WebIdentityTokenCredentialsProvider"
+    "spark.hadoop.fs.s3a.fast.upload": "true"
+    # --- carried over from the EMR Serverless config ---
+    "spark.sql.execution.arrow.pyspark.enabled": "true"
+    "spark.hadoop.mapreduce.fileoutputcommitter.marksuccessfuljobs": "false"
+    # dynamic allocation needs shuffle tracking on K8s (no external shuffle service)
+    "spark.dynamicAllocation.enabled": "true"
+    "spark.dynamicAllocation.shuffleTracking.enabled": "true"
+    "spark.dynamicAllocation.minExecutors": "1"
+    "spark.dynamicAllocation.maxExecutors": "4"
+    # --- KMS-encrypted writes: OMIT for the demo; add only for the real job in
+    #     the customer's account (see the KMS note in section 1.3) ---
+    # "spark.hadoop.fs.s3a.server-side-encryption-algorithm": "SSE-KMS"
+    # "spark.hadoop.fs.s3a.server-side-encryption.key": "arn:aws:kms:<region>:<account>:key/<your-key-id>"
+
+  driver:
+    cores: 1
+    memory: "2g"
+    serviceAccount: spark-driver-sa
+    # nodeSelector: { node-pool: spark }
+    # tolerations: [{ key: dedicated, operator: Equal, value: spark, effect: NoSchedule }]
+    labels:
+      app: spark-job
+
+  executor:
+    cores: 1
+    instances: 2            # starting point; dynamic allocation scales 1..4
+    memory: "2g"
+    serviceAccount: spark-driver-sa
+    # nodeSelector: { node-pool: spark }
+    # tolerations: [{ key: dedicated, operator: Equal, value: spark, effect: NoSchedule }]
+    labels:
+      app: spark-job
