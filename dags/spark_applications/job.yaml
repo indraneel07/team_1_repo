@@ -7,7 +7,7 @@ spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v1"
+  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v2"
   imagePullPolicy: Always
   sparkVersion: "3.5.3"
   restartPolicy:
