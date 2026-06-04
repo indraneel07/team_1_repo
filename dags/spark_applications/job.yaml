@@ -7,14 +7,15 @@ spec:
   type: Python
   pythonVersion: "3"
   mode: cluster
-  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v2"
+  image: "043672736276.dkr.ecr.us-west-1.amazonaws.com/indraneel-spark:v3"
   imagePullPolicy: Always
   sparkVersion: "3.5.3"
   restartPolicy:
     type: Never
 
   # entrypoint pulled from S3 by the driver pod
-  mainApplicationFile: "s3a://indraneel-re-aws/udecf/v1/main.py"
+  # mainApplicationFile: "s3a://indraneel-re-aws/udecf/v1/main.py"
+  mainApplicationFile: "local:///opt/spark/jobs/launcher.py"
 
   # the --py-files equivalent: dependency package distributed to driver+executors
   deps:
@@ -23,6 +24,8 @@ spec:
 
   # arguments passed to main.py (mirrors the EMR "Script arguments")
   arguments:
+    - "--job-module"
+    - "zfi_lfc302.main"
     - "--input"
     - "s3a://indraneel-re-aws/raw/person_identity/ZFI_LFC302/2026/05/07"
     - "--output"
