@@ -12,8 +12,9 @@ def my_first_dag_with_taskflow_api():
     def hello_world():
         print("Hello, world!")
 
-    @task
+    @task(retries=4)
     def goodbye_world():
+        raise ValueError("Error!!!!!!")
         print("Goodbye, world!")
 
     hello = hello_world()
