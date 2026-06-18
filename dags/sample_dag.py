@@ -1,5 +1,5 @@
 from airflow.sdk import dag, task
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @dag(
     schedule='@daily',
@@ -12,7 +12,7 @@ def my_first_dag_with_taskflow_api():
     def hello_world():
         print("Hello, world!")
 
-    @task(retries=4)
+    @task(retries=4, retry_delay=timedelta(seconds=5))
     def goodbye_world():
         raise ValueError("Error!!!!!!")
         print("Goodbye, world!")
