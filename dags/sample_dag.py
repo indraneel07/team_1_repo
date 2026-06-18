@@ -8,7 +8,7 @@ from datetime import datetime
     catchup=False
 )
 def my_first_dag_with_taskflow_api():
-    @task
+    @task(retries=4)
     def hello_world():
         print("Hello, world!")
 
